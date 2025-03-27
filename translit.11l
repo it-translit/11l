@@ -53,19 +53,19 @@ V mapping = [
 ]
 
 . F get_mappings(items)
-   [[String = String]] mappings = (0 .< max(items.map((fr, to) -> fr.len))).map(_ -> [String = String]())
-   L(fr, to) items
-      mappings[fr.len-1][fr] = to
+   [[String = String]] mappings = (0 .< max(items.map((from, to) -> from.len))).map(_ -> [String = String]())
+   L(from, to) items
+      mappings[from.len-1][from] = to
    R mappings
 
-V mappings_wo_q = get_mappings(mapping.items())
-V mappings_with_q = get_mappings(mapping.map((fr, to) -> (fr, to.replace(‘'’, ‘q’))))
+V mappings_wo_q   = get_mappings(mapping.items())
+V mappings_with_q = get_mappings(mapping.map((from, to) -> (from, to.replace(‘'’, ‘q’))))
 
 [(String, String)] mappings_reverse_items
-L(fr, to) mapping
-   mappings_reverse_items.append((to, fr))
+L(from, to) mapping
+   mappings_reverse_items.append((to, from))
    I ‘'’ C to
-      mappings_reverse_items.append((to.replace(‘'’, ‘q’), fr))
+      mappings_reverse_items.append((to.replace(‘'’, ‘q’), from))
 V mappings_reverse = get_mappings(mappings_reverse_items)
 
 F (source, use_q = 0B)
@@ -130,8 +130,8 @@ F (source, use_q = 0B)
                      I source[i.+n].is_uppercase()
                         to .= uppercase()
                      E
-                        to = (0 .< n).map(j -> (I @source[@i + j].is_uppercase() {@to[j].uppercase()} E @to[j])).join(‘’)‘’
-                                         ‘’(I source[i + n - 1].is_uppercase() {to[n ..].uppercase()} E to[n ..])
+                        to = (0 .< n).map(j -> (I @source[@i+j].is_uppercase() {@to[j].uppercase()} E @to[j])).join(‘’)‘’
+                                            ‘’(I source[i+n-1].is_uppercase() {to[n..].uppercase()} E to[n..])
             res ‘’= to
             i += n
             L.break
