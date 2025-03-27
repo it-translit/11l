@@ -1,0 +1,35 @@
+Imported modules = []
+mapping
+    type = Dict
+    node = N
+get_mappings
+    type = ‘’
+    node
+        function_arguments = [
+            ‘items; ; ; ’
+        ]
+mappings_wo_q
+    type = ‘’
+    node = N
+mappings_with_q
+    type = ‘’
+    node = N
+mappings_reverse_items
+    type = List
+    node = N
+mappings_reverse
+    type = ‘’
+    node = N
+trans
+    type = ‘’
+    node
+        function_arguments = [
+            ‘source; ; ; ’
+            ‘use_q; 0B; ; ’
+        ]
+reverse
+    type = ‘’
+    node
+        function_arguments = [
+            ‘source; ; ; ’
+        ]

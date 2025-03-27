@@ -1,0 +1,40 @@
+mapping
+    type = ‘’
+    ast_nodes = []
+get_mappings
+    type = ‘’
+    ast_nodes = [
+    .   node_type = function
+        function_arguments = [
+            ‘items; ; ; ’
+        ]
+    ]
+mappings_wo_q
+    type = ‘’
+    ast_nodes = []
+mappings_with_q
+    type = ‘’
+    ast_nodes = []
+mappings_reverse_items
+    type = ‘’
+    ast_nodes = []
+mappings_reverse
+    type = ‘’
+    ast_nodes = []
+trans
+    type = ‘’
+    ast_nodes = [
+    .   node_type = function
+        function_arguments = [
+            ‘source; ; ; ’
+            ‘use_q; false; ; ’
+        ]
+    ]
+reverse
+    type = ‘’
+    ast_nodes = [
+    .   node_type = function
+        function_arguments = [
+            ‘source; ; ; ’
+        ]
+    ]
