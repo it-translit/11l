@@ -83,7 +83,7 @@ t(‘Git'а’, ‘\Git'\a’)
 t(‘Д'Артаньян’, ‘D\'\Artan'yan’)
 
 L(rep) 1..4
-   L(tup) cart_product((0.<32).map(i -> Char(code' ‘а’.code + i)) [+] [‘ё’], repeat' rep)
+   L(tup) cart_product(Array(‘а’..‘я’) [+] [‘ё’], repeat' rep)
       I translit:reverse(translit:(tup.join(‘’))) != tup.join(‘’)
          t(tup.join(‘’), translit:(tup.join(‘’)))
 
