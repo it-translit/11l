@@ -1,0 +1,103 @@
+V ok = 1B
+F t(s, d, use_q = 0B)
+   I translit:(s, use_q' use_q) != d
+      :stderr.write(s‘ -> ’translit:(s, use_q' use_q)"\n")
+      :stderr.flush()
+      :ok = 0B
+      R
+   I translit:reverse(d) != s
+      :stderr.write(s‘ -> ’d‘ -> ’translit:reverse(d)"\n")
+      :stderr.flush()
+      :ok = 0B
+
+t(‘яндекс’, ‘yandex’)
+t(‘Яндекс’, ‘Yandex’)
+t(‘ЯНДЕКС’, ‘YANDEX’)
+t(‘МЯ’, ‘MYA’)
+t(‘Мя’, ‘Mya’)
+t(‘мя’, ‘mya’)
+t(‘хабр’, ‘habr’)
+
+t(‘только’, ‘tol'ko’)
+t(‘только’, ‘tolqko’, use_q' 1B)
+t(‘Только’, ‘Tol'ko’)
+t(‘Только’, ‘Tolqko’, use_q' 1B)
+t(‘ТОЛЬКО’, ‘TOL'KO’)
+t(‘ТОЛЬКО’, ‘TOLQKO’, use_q' 1B)
+t(‘тольько’, ‘tolqwko’)
+t(‘ТОЛЬЬКО’, ‘TOLQWKO’)
+
+t(‘ксерокс’, ‘xerox’)
+t(‘Ксерокс’, ‘Xerox’)
+t(‘КСЕРОКС’, ‘XEROX’)
+t(‘кСЕРОКС’, ‘kSEROX’)
+t(‘ксЕРОКС’, ‘xEROX’)
+t(‘КСерокс’, ‘KSerox’)
+t(‘кСерокс’, ‘kSerox’)
+t(‘ксероКс’, ‘xeroKs’)
+t(‘ксерокС’, ‘xerokS’)
+t(‘ксероКС’, ‘xeroKS’)
+t(‘КС’, ‘KS’)
+t(‘Кс’, ‘Ks’)
+
+t(‘схема’, ‘skhema’)
+t(‘Схема’, ‘Skhema’)
+t(‘СХЕМА’, ‘SKHEMA’)
+t(‘сХЕМА’, ‘sKHEMA’)
+
+t(‘Скхема’, ‘Skhwema’)
+t(‘СКХЕМА’, ‘SKHWEMA’)
+t(‘сКХЕМА’, ‘sKHWEMA’)
+t(‘скХЕМА’, ‘skHWEMA’)
+t(‘скхЕМА’, ‘skhwEMA’)
+
+t(‘Ь’, ‘Q’)
+t(‘ЬМ’, ‘'M’)
+t(‘МЬ’, ‘M'’)
+t(‘ЬЬ’, ‘QW’)
+t(‘ьЬ’, ‘qW’)
+t(‘Ьь’, ‘Qw’)
+t(‘Ъ’, ‘Qq’)
+t(‘ЪМ’, ‘''M’)
+t(‘МЪ’, ‘M''’)
+
+t(‘ь’, ‘'’)
+t(‘ъ’, ‘''’)
+t(‘э’, ‘e'’)
+t(‘я это знаю’, ‘ya e'to znayu’)
+t(‘Это’, ‘E'to’)
+
+t(‘Въезд’, ‘V''ezd’)
+t(‘ВЪЕЗД’, ‘V''EZD’)
+t(‘въезд’, ‘v''ezd’)
+t(‘Вьюга’, ‘V'yuga’)
+t(‘соль’, ‘sol'’)
+t(‘СОЛЬ’, ‘SOL'’)
+t(‘СОЛь’, ‘SOLq’)
+
+t(‘Сканер QR-кода’, ‘Skaner \QR\-koda’)
+t(‘Яхта\yacht’, ‘Yahta\\\yacht\’)
+t(‘C\D’, ‘\C\\D\’)
+t(‘Git’, ‘\Git\’)
+t(‘Git'а’, ‘\Git'\a’)
+t(‘Д'Артаньян’, ‘D\'\Artan'yan’)
+
+L(rep) 1..4
+   L(tup) cart_product((0.<32).map(i -> Char(code' ‘а’.code + i)) [+] [‘ё’], repeat' rep)
+      I translit:reverse(translit:(tup.join(‘’))) != tup.join(‘’)
+         t(tup.join(‘’), translit:(tup.join(‘’)))
+
+V test_chars = ‘азксежхцчшщъыьэя’
+L(rep) 1..4
+   L(tup) cart_product(test_chars‘’test_chars.uppercase()‘ ’, repeat' rep)
+      V tr = translit:(tup.join(‘’))
+      I translit:reverse(tr) != tup.join(‘’)
+         t(tup.join(‘’), tr)
+      I ‘'’ C tr
+         I translit:reverse(translit:(tup.join(‘’), use_q' 1B)) != tup.join(‘’)
+            t(tup.join(‘’), translit:(tup.join(‘’), use_q' 1B), use_q' 1B)
+
+I ok
+   print(‘ok’)
+E
+   exit(‘!ok’)

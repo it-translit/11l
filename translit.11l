@@ -1,0 +1,196 @@
+V mapping = [
+   ‘а’ = ‘a’,
+   ‘б’ = ‘b’,
+   ‘в’ = ‘v’,
+   ‘г’ = ‘g’,
+   ‘д’ = ‘d’,
+   ‘з’ = ‘z’,
+   ‘и’ = ‘i’,
+   ‘к’ = ‘k’,
+   ‘л’ = ‘l’,
+   ‘м’ = ‘m’,
+   ‘н’ = ‘n’,
+   ‘о’ = ‘o’,
+   ‘п’ = ‘p’,
+   ‘р’ = ‘r’,
+   ‘с’ = ‘s’,
+   ‘т’ = ‘t’,
+   ‘у’ = ‘u’,
+   ‘ф’ = ‘f’,
+   ‘е’ = ‘e’,
+
+   ‘ё’ = ‘yo’,
+   ‘ж’ = ‘zh’,
+   ‘й’ = ‘j’,
+   ‘х’ = ‘h’,
+   ‘сх’= ‘skh’,
+   ‘кс’= ‘x’,
+   ‘ц’ = ‘cz’,
+   ‘ч’ = ‘ch’,
+   ‘ш’ = ‘sh’,
+   ‘щ’ = ‘shh’,
+   ‘шх’= ‘shkh’,
+   ‘ъ’ = ‘''’,
+   ‘ы’ = ‘y’,
+   ‘ь’ = ‘'’,
+   ‘э’ = ‘e'’,
+   ‘ю’ = ‘yu’,
+   ‘я’ = ‘ya’,
+
+   ‘ыа’  = ‘yaw’,
+   ‘ыу’  = ‘yuw’,
+   ‘ыо’  = ‘yow’,
+   ‘еь’  = ‘eqw’,
+   ‘ьь’  = ‘qw’,
+   ‘ьъ’  = ‘qww’,
+   ‘ъь’  = ‘qqw’,
+   ‘ъъ’  = ‘qqqw’,
+   ‘еъ’  = ‘eww’,
+   ‘зх’  = ‘zkh’,
+   ‘зкх’ = ‘zkhw’,
+   ‘скх’ = ‘skhw’,
+   ‘шкх’ = ‘shkhw’
+]
+
+. F get_mappings(items)
+   [[String = String]] mappings = (0 .< max(items.map((fr, to) -> fr.len))).map(_ -> [String = String]())
+   L(fr, to) items
+      mappings[fr.len-1][fr] = to
+   R mappings
+
+V mappings_wo_q = get_mappings(mapping.items())
+V mappings_with_q = get_mappings(mapping.map((fr, to) -> (fr, to.replace(‘'’, ‘q’))))
+
+[(String, String)] mappings_reverse_items
+L(fr, to) mapping
+   mappings_reverse_items.append((to, fr))
+   I ‘'’ C to
+      mappings_reverse_items.append((to.replace(‘'’, ‘q’), fr))
+V mappings_reverse = get_mappings(mappings_reverse_items)
+
+F (source, use_q = 0B)
+   V& mappings = I use_q {:mappings_with_q} E :mappings_wo_q
+   V source_lower = source.lowercase()
+   V res = ‘’
+   V i = 0
+   L i < source.len
+      I source[i] == ‘\’
+         res ‘’= ‘\\’
+         i++
+         L.continue
+      E I source_lower[i].code C ‘a’.code .. ‘z’.code | source_lower[i] == ‘'’
+         res ‘’= ‘\’
+         V start = i
+         i++
+         L i < source.len
+            I source_lower[i].code C ‘а’.code .. ‘я’.code | source_lower[i] == ‘ё’
+               i--
+               L !(source_lower[i].code C ‘a’.code .. ‘z’.code | source_lower[i] == ‘'’)
+                  i--
+               i++
+               L.break
+            i++
+         res ‘’= source[start.<i].replace(‘\’, ‘\\’)‘\’
+         L.continue
+
+      L(n) (mappings.len .< 0).step(-1)
+         V sl = source_lower[i.+n]
+         V to = mappings[n-1].get(sl, ‘’)
+         I to != ‘’
+            I !use_q & to.starts_with(‘'’)
+               I (I source[i+n.+1].is_alpha()
+                     {source[i.+n].is_lowercase() == source[i+n].is_lowercase()} E
+                     (source[i.+n].is_lowercase() & (i == 0 | source[i-1].is_lowercase())) |
+                     (source[i.+n].is_uppercase() & (i  > 0 & source[i-1].is_uppercase())))
+                  {}
+               E
+                  to .= replace(‘'’, ‘q’)
+            I sl == ‘кс’ & source_lower[i+n.+1] C (‘х’, ‘к’)
+               L.continue
+            I source[i.+n] != sl
+               I to.len == 1
+                  I sl == ‘кс’
+                     I source[i.+n] == ‘кС’
+                        to = ‘kS’
+                     E I source[i.+n] == ‘КС’ & !(source[i+2.+1].is_uppercase() | (i > 0 & source[i-1].is_uppercase()))
+                        to = ‘KS’
+                     E I source[i.+n] == ‘Кс’ & (!source[i+2.+1].is_lowercase() | source[i+2.+1] C ‘ъь’ | (i > 0 & source[i-1].is_alpha()))
+                        to = ‘Ks’
+                     E
+                        to .= uppercase()
+                  E
+                     to .= uppercase()
+               E
+                  I n == 1
+                     I source[i+1.+1].is_uppercase() | (i > 0 & source[i-1].is_uppercase())
+                        to .= uppercase()
+                     E
+                        to .= capitalize()
+                  E
+                     I source[i.+n].is_uppercase()
+                        to .= uppercase()
+                     E
+                        to = (0 .< n).map(j -> (I @source[@i + j].is_uppercase() {@to[j].uppercase()} E @to[j])).join(‘’)‘’
+                                         ‘’(I source[i + n - 1].is_uppercase() {to[n ..].uppercase()} E to[n ..])
+            res ‘’= to
+            i += n
+            L.break
+      L.was_no_break
+         res ‘’= source[i]
+         i++
+   R res
+
+F reverse(source)
+   V source_lower = source.lowercase()
+   V res = ‘’
+   V i = 0
+   L i < source.len
+      I source[i] == ‘\’
+         i++
+         I source[i] == ‘\’
+            res ‘’= ‘\’
+            i++
+            L.continue
+         V start = i
+         i++
+         L i < source.len
+            I source[i] == ‘\’
+               I source[i+1.+1] == ‘\’
+                  res ‘’= source[start.<i]
+                  start = i + 1
+                  i += 2
+                  L.continue
+               res ‘’= source[start.<i]
+               i++
+               L.break
+            i++
+         L.continue
+
+      L(n) (:mappings_reverse.len .< 0).step(-1)
+         V sl = source_lower[i.+n]
+         V to = :mappings_reverse[n-1].get(sl, ‘’)
+         I to != ‘’
+            I source[i.+n] != sl
+               I to.len == 1
+                  to .= uppercase()
+               E
+                  I n == 1
+                     I source[i+1.+1].is_uppercase() | source[i+1.+1] == ‘'’ | (i > 0 & (source[i-1].is_uppercase() | source[i-1] == ‘'’))
+                        to .= uppercase()
+                     E
+                        to .= capitalize()
+                  E
+                     I source[i .+ n].is_uppercase()
+                        to .= uppercase()
+                     E
+                        to = (0 .< to.len).map(j -> (I @source[@i + j].is_uppercase() {@to[j].uppercase()} E @to[j])).join(‘’)
+            E I source[i] == ‘'’
+               I I source[i+n.+1].is_alpha() {source[i + n].is_uppercase()} E res.len > 0 & res.last.is_uppercase()
+                  to .= uppercase()
+            res ‘’= to
+            i += n
+            L.break
+      L.was_no_break
+         res ‘’= source[i]
+         i++
+   R res
