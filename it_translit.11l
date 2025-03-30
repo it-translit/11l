@@ -76,14 +76,14 @@ F trans(source, use_q = 0B)
          res ‘’= "\\\\"
          i++
          L.continue
-      E I source_lower[i].code C ‘a’.code .. ‘z’.code | source_lower[i] == ‘'’
+      E I source_lower[i] C ‘a’..‘z’ | source_lower[i] == ‘'’
          res ‘’= ‘\’
          V start = i
          i++
          L i < source.len
-            I source_lower[i].code C ‘а’.code .. ‘я’.code | source_lower[i] == ‘ё’
+            I source_lower[i] C ‘а’..‘я’ | source_lower[i] == ‘ё’
                i--
-               L !(source_lower[i].code C ‘a’.code .. ‘z’.code | source_lower[i] == ‘'’)
+               L !(source_lower[i] C ‘a’..‘z’ | source_lower[i] == ‘'’)
                   i--
                i++
                L.break
