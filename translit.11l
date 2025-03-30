@@ -53,7 +53,7 @@ V mapping = [
 ]
 
 . F get_mappings(items)
-   [[String = String]] mappings = (0 .< max(items.map((from, to) -> from.len))).map(_ -> [String = String]())
+   V mappings = [[String = String]()] * max(items.map((from, to) -> from.len))
    L(from, to) items
       mappings[from.len-1][from] = to
    R mappings
