@@ -68,7 +68,7 @@ L(from, to) mapping
       mappings_reverse_items.append((to.replace(‘'’, ‘q’), from))
 V mappings_reverse = get_mappings(mappings_reverse_items)
 
-F (source, use_q = 0B)
+F (source, ', use_q = 0B)
    V& mappings = I use_q {:mappings_with_q} E :mappings_wo_q
    V source_lower = source.lowercase()
    V res = ‘’
